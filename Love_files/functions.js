@@ -1,10 +1,18 @@
-
+/*
+ * Helper functions for the Valentines web app.
+ * Handles window resizing, typewriter effect, and time elapsed calculation.
  */
 
-// variables
+// Variables to store the initial window dimensions
 var $win = $(window);
 var clientWidth = $win.width();
 var clientHeight = $win.height();
+
+/**
+ * Event listener for window resize.
+ * Reloads the page if the window dimensions change, ensuring the canvas and elements are correctly sized.
+ */
+
 
 $(window).resize(function() {
     var newWidth = $win.width();
@@ -15,27 +23,42 @@ $(window).resize(function() {
 });
 
 (function($) {
+    /**
+     * jQuery plugin: typewriter
+     * Simulates a typewriter effect for HTML content.
+     * Iterates through the element's text content and reveals it character by character.
+     * Handles HTML tags (like <br> or <span>) by skipping over them to avoid breaking the markup during typing.
+     */
 	$.fn.typewriter = function() {
 		this.each(function() {
 			var $ele = $(this), str = $ele.html(), progress = 0;
-			$ele.html('');
+			$ele.html(''); // Clear the content initially
 			var timer = setInterval(function() {
 				var current = str.substr(progress, 1);
+				// If the current character is the start of an HTML tag, skip to the end of the tag
 				if (current == '<') {
 					progress = str.indexOf('>', progress) + 1;
 				} else {
 					progress++;
 				}
+                // Update the HTML with the substring up to the current progress
+                // Adds a blinking cursor effect ('_') for odd progress values
 				$ele.html(str.substring(0, progress) + (progress & 1 ? '_' : ''));
 				if (progress >= str.length) {
-					clearInterval(timer);
+					clearInterval(timer); // Stop the timer when done
 				}
-			}, 75);
+			}, 75); // Typing speed in milliseconds
 		});
 		return this;
 	};
 })(jQuery);
 
+/**
+ * Calculates and displays the time elapsed since a specific date.
+ * Updates the #clock element with days, hours, minutes, and seconds.
+ * 
+ * @param {Date} date - The starting date to calculate time from.
+ */
 function timeElapse(date){
 	var current = Date();
 	var seconds = (Date.parse(current) - Date.parse(date)) / 1000;
@@ -54,6 +77,6 @@ function timeElapse(date){
 	if (seconds < 10) {
 		seconds = "0" + seconds;
 	}
-	var result = "第 <span class=\"digit\">" + days + "</span> 天 <span class=\"digit\">" + hours + "</span> 小时 <span class=\"digit\">" + minutes + "</span> 分钟 <span class=\"digit\">" + seconds + "</span> 秒"; 
+	var result = "Days <span class=\"digit\">" + days + "</span> Hours <span class=\"digit\">" + hours + "</span> Minutes <span class=\"digit\">" + minutes + "</span> Seconds <span class=\"digit\">" + seconds + "</span>"; 
 	$("#clock").html(result);
 }
